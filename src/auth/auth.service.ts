@@ -16,7 +16,6 @@ class AuthService {
     @InjectRepository(Hospital)
     private hospitalsRepository: Repository<Hospital>,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
   ) {}
   
   async registerHospital(createHospitalDto: CreateHospitalDto) {

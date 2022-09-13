@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import Organ from "organs/entities/organ.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 class Hospital {
@@ -16,6 +17,9 @@ class Hospital {
 
   @Column()
   city: string;
+
+  @OneToMany(() => Organ, organ => organ.hospital)
+  organs: Organ[];
 }
 
 export default Hospital;

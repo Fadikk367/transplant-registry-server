@@ -17,12 +17,12 @@ export class HospitalsController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number,) {
-    return this.hospitalsService.findOne(id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.hospitalsService.findOne(id, true);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number,) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.hospitalsService.delete(id);
   }
 }

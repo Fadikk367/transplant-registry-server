@@ -8,13 +8,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { HospitalsModule } from './hospitals/hospitals.module';
+import { OrgansModule } from './organs/organs.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(), 
     DatabaseModule, 
     AuthenticationModule, 
-    HospitalsModule,
+    HospitalsModule, OrgansModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import Hospital from 'hospitals/hospital.entity';
+import Organ from 'organs/entities/organ.entity';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import Hospital from 'hospitals/hospital.entity';
         type: 'postgres',
         url: configService.get('DATABASE_URL'),
         database: 'transplant-registry',
-        entities: [Hospital],
+        entities: [Hospital, Organ],
         synchronize: true,
       })
     }),
