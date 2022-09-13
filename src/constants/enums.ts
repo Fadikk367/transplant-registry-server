@@ -11,3 +11,9 @@ export enum HLA {
   C = 'C',
   D = 'D',
 }
+
+export enum PatientPriority {
+  Critical = 'CRITICAL',
+  Normal = 'NORMAL',
+  Low = 'LOW',
+}

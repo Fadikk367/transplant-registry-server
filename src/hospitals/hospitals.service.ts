@@ -22,8 +22,11 @@ export class HospitalsService {
     return this.hospitalsRepository.find();
   }
 
-  async findOne(id: number, withOrgans = false) {
-    const hospital = await this.hospitalsRepository.findOne({where: {id}, relations: {organs: withOrgans}});
+  async findOne(id: number, withOrgans = false, withRequests = false) {
+    const hospital = await this.hospitalsRepository.findOne({
+      where: {id}, 
+      relations: {organs: withOrgans, organRequests: withRequests}
+    });
 
     if (!hospital) {
       throw new HttpException(`Hospital with id= ${id} does not exist`, HttpStatus.NOT_FOUND);

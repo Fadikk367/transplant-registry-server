@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Req, Query } from '@nestjs/common';
+
+import AuthRequest from 'auth/AuthRequest';
+
 import { OrgansService } from './organs.service';
 import { CreateOrganDto } from './dto/create-organ.dto';
-import AuthRequest from 'auth/AuthRequest';
 import OrganFiltersDto from './dto/filter-organ.dto';
+
 
 @Controller('organs')
 export class OrgansController {
@@ -15,7 +18,6 @@ export class OrgansController {
 
   @Get()
   findAll(@Query() organFilters: OrganFiltersDto) {
-    console.log({organFilters})
     return this.organsService.findAll(organFilters);
   }
 

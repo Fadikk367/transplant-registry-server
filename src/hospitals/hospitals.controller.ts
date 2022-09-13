@@ -18,7 +18,7 @@ export class HospitalsController {
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.hospitalsService.findOne(id, true);
+    return this.hospitalsService.findOne(id, true, true);
   }
 
   @Delete(':id')

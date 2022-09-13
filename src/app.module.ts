@@ -9,13 +9,14 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { HospitalsModule } from './hospitals/hospitals.module';
 import { OrgansModule } from './organs/organs.module';
+import { OrganRequestsModule } from './organ-requests/organ-requests.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(), 
     DatabaseModule, 
     AuthenticationModule, 
-    HospitalsModule, OrgansModule,
+    HospitalsModule, OrgansModule, OrganRequestsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
