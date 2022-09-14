@@ -60,13 +60,15 @@ export class OrganMatchService {
           const newMatch = this.organMatchesRepository.create({organ: matchedOrgan, request: organMatch.request});
           matchedOrgan.status = OrganStatus.Matched;
           organMatch.request.status = OrganRequestStatus.Matched;
-          await queryRunner.manager.save(newMatch);
+          await Promise.all([
+            queryRunner.manager.save(newMatch),
+            queryRunner.manager.save(matchedOrgan),
+          ]);
         }
 
         await Promise.all([
           queryRunner.manager.save(organMatch),
           queryRunner.manager.save(organMatch.request),
-          queryRunner.manager.save(matchedOrgan),
         ]);
       // If we accept a match - change states:
       // - request to fulfilled

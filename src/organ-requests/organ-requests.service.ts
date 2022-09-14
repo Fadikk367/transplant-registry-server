@@ -85,8 +85,20 @@ export class OrganRequestsService {
       query.andWhere("request.priority = :priority", {priority});
     }
 
+    const priorityByStatus = {
+      [OrganRequestStatus.Waiting]: 2,
+      [OrganRequestStatus.Matched]: 1,
+      [OrganRequestStatus.Fulfilled]: 0,
+    }
+
     const requests = await query.getMany();
-    return requests.sort((a, b) => b.priority - a.priority);
+    return requests.sort((a, b) => {
+      if (b.status === a.status) {
+        return b.priority - a.priority;
+      } 
+
+      return priorityByStatus[b.status] - priorityByStatus[a.status];
+    });
   }
 
   findOne(id: number) {

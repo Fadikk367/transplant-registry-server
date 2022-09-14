@@ -62,7 +62,7 @@ export class OrgansService {
     }
   }
 
-  findAll({type, hla, status}: OrganFiltersDto) {
+  async findAll({type, hla, status}: OrganFiltersDto) {
     const query = this.organsRepository.createQueryBuilder('organ')
       .leftJoinAndSelect('organ.hospital', 'hospital');
   
@@ -77,6 +77,17 @@ export class OrgansService {
     if (status) {
       query.andWhere("organ.status = :status", {status});
     }
+
+    const priorityByStatus = {
+      [OrganStatus.Available]: 2,
+      [OrganStatus.Matched]: 1,
+      [OrganStatus.Taken]: 0,
+    }
+
+    const organs = await query.getMany();
+    return organs.sort((a, b) => {
+      return priorityByStatus[b.status] - priorityByStatus[a.status];
+    });
 
     return query.getMany();
   }
