@@ -12,8 +12,8 @@ class Hospital {
   @Column({ unique: true })
   login: string;
 
-  @Column()
-  password: string;
+  @Column({ select: false })
+  password?: string;
 
   @Column()
   name: string;

@@ -1,7 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { OrganRequestStatus, OrganStatus } from 'constants/enums';
 import Hospital from 'hospitals/hospital.entity';
-import { Repository } from 'typeorm';
+import OrganMatch from 'organ-match/entities/organ-match.entity';
+import OrganRequest from 'organ-requests/entities/organ-request.entity';
+import { OrganRequestsService } from 'organ-requests/organ-requests.service';
+import { DataSource, Repository } from 'typeorm';
 import { CreateOrganDto } from './dto/create-organ.dto';
 import OrganFiltersDto from './dto/filter-organ.dto';
 import Organ from './entities/organ.entity';
@@ -9,20 +13,58 @@ import Organ from './entities/organ.entity';
 @Injectable()
 export class OrgansService {
   constructor(
+    private readonly organRequestsService: OrganRequestsService,
     @InjectRepository(Organ)
-    private organsRepository: Repository<Organ>
+    private organsRepository: Repository<Organ>,
+    @InjectRepository(OrganMatch)
+    private organMatchesRepository: Repository<OrganMatch>,
+    private dataSource: DataSource,
   ) {}
 
   async create(createOrganDto: CreateOrganDto, hospital: Hospital) {
-    const organ = this.organsRepository.create(createOrganDto);
-    organ.hospital = hospital;
-    await this.organsRepository.save(organ);
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    return organ;
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const organ = this.organsRepository.create(createOrganDto);
+      organ.hospital = hospital;
+      await queryRunner.manager.save(organ);
+  
+      // check for requests in stats 'WAITING', if present create Match with oldest request with highest priority
+      const matchingOrganRequests = await this.organRequestsService.findAll({
+        hla: organ.hla, 
+        organ: organ.type, 
+        status: OrganRequestStatus.Waiting,
+      });
+
+      const matchedRequest = matchingOrganRequests[0];
+      if (matchedRequest) {
+        const match = this.organMatchesRepository.create({organ, request: matchedRequest});
+        matchedRequest.status = OrganRequestStatus.Matched;
+        organ.status = OrganStatus.Matched;
+        await Promise.all([
+          queryRunner.manager.save(match),
+          queryRunner.manager.save(organ),
+          queryRunner.manager.save(matchedRequest),
+        ]);
+        console.log({match, organ, matchedRequest});
+      }
+  
+      await queryRunner.commitTransaction();
+      return organ;
+    } catch (error) {
+      console.log({error});
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  findAll({type, hla}: OrganFiltersDto) {
-    const query = this.organsRepository.createQueryBuilder('organ');
+  findAll({type, hla, status}: OrganFiltersDto) {
+    const query = this.organsRepository.createQueryBuilder('organ')
+      .leftJoinAndSelect('organ.hospital', 'hospital');
   
     if (type) {
       query.andWhere("organ.type = :type", {type});
@@ -31,6 +73,11 @@ export class OrgansService {
     if (hla) {
       query.andWhere("organ.hla = :hla", {hla});
     }
+
+    if (status) {
+      query.andWhere("organ.status = :status", {status});
+    }
+
     return query.getMany();
   }
 

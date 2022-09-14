@@ -10,13 +10,17 @@ import { DatabaseModule } from './database/database.module';
 import { HospitalsModule } from './hospitals/hospitals.module';
 import { OrgansModule } from './organs/organs.module';
 import { OrganRequestsModule } from './organ-requests/organ-requests.module';
+import { OrganMatchModule } from './organ-match/organ-match.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(), 
     DatabaseModule, 
     AuthenticationModule, 
-    HospitalsModule, OrgansModule, OrganRequestsModule,
+    HospitalsModule, 
+    OrgansModule, 
+    OrganRequestsModule, 
+    OrganMatchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

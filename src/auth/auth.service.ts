@@ -41,13 +41,17 @@ class AuthService {
   }
 
   async getAuthenticatedHospital({login, password}: CredentialsDto) {
-    const hospital = await this.hospitalsRepository.findOneBy({login});
+    const hospital = await this.hospitalsRepository.createQueryBuilder('hospital')
+      .where('hospital.login = :login', {login})
+      .addSelect('hospital.password')
+      .getOne();
 
     if (!hospital) {
       throw new HttpException(`Invalid login or password`, HttpStatus.NOT_FOUND);
     }
 
-    await this.verifyPassword(password, hospital.password);
+    await this.verifyPassword(password, hospital.password!);
+    delete hospital.password;
 
     return hospital;
   }

@@ -13,7 +13,25 @@ export enum HLA {
 }
 
 export enum PatientPriority {
-  Critical = 'CRITICAL',
-  Normal = 'NORMAL',
-  Low = 'LOW',
+  Critical = 3,
+  Normal = 2,
+  Low = 1,
+}
+
+export enum OrganMatchStatus {
+  Accepted = 'ACCEPTED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED',
+}
+
+export enum OrganStatus {
+  Available = 'AVAILABLE',
+  Matched = 'MATCHED',
+  Taken = 'TAKEN',
+}
+
+export enum OrganRequestStatus {
+  Fulfilled = 'FULFILLED',
+  Matched = 'MATCHED',
+  Waiting = 'WAITING',
 }

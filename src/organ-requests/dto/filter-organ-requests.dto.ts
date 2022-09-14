@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional } from "class-validator";
 
-import { HLA, OrganType, PatientPriority } from "constants/enums";
+import { HLA, OrganRequestStatus, OrganType, PatientPriority } from "constants/enums";
 
 
 class FilterOrganRequestsDto {
@@ -11,6 +11,10 @@ class FilterOrganRequestsDto {
   @IsOptional()
   @IsEnum(HLA)
   hla?: HLA;
+
+  @IsOptional()
+  @IsEnum(OrganRequestStatus)
+  status?: OrganRequestStatus;
 
   @IsOptional()
   @IsEnum(PatientPriority)
