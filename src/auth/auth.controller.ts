@@ -1,10 +1,12 @@
 import { Body, Req, Controller, HttpCode, Post, UseGuards, Get } from '@nestjs/common';
+
+import { Public } from 'common/decorators';
+import { CreateHospitalDto } from 'hospitals/create-hospital.dto';
+
 import AuthService from './auth.service';
 import RequestWithHospital from './AuthRequest';
-import { CreateHospitalDto } from 'hospitals/create-hospital.dto';
-import { Public } from 'common/decorators';
 import { LocalAuthGuard } from './guards/LocalAuthGuard';
-import { JwtAuthGuard } from './guards/JwtAuthGuard';
+
  
 @Controller('auth')
 export class AuthenticationController {
@@ -15,7 +17,13 @@ export class AuthenticationController {
   @Public()
   @Post('register')
   async register(@Body() createHospitalDto: CreateHospitalDto) {
-    return this.authService.registerHospital(createHospitalDto);
+    const hospital = await this.authService.registerHospital(createHospitalDto);
+    const {accessToken} = await this.authService.login(hospital);
+
+    return {
+      accessToken,
+      hospital,
+    }
   }
  
 
@@ -24,7 +32,11 @@ export class AuthenticationController {
   @HttpCode(200)
   @Post('login')
   async login(@Req() req: RequestWithHospital) {
-    return this.authService.login(req.hospital);
+    const {accessToken} = await this.authService.login(req.hospital);
+    return {
+      accessToken,
+      hospital: req.hospital,
+    }
   }
 
   @Get('profile')
